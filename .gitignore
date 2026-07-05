@@ -1,0 +1,60 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+dist/
+*.egg-info/
+.eggs/
+*.egg
+.env
+.venv/
+venv/
+env/
+
+# Node.js
+node_modules/
+npm-debug.log*
+dist/
+*.js.map
+
+# Secrets
+.env
+*.pem
+*.key
+*.p12
+
+# LangSmith / LangChain
+.langchain.env
+
+# Postgres
+*.db
+*.sqlite3
+
+# Jupyter
+.ipynb_checkpoints
+*.ipynb
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Test artifacts
+.pytest_cache/
+htmlcov/
+.coverage
+
+# Build artifacts
+mcp_server/dist/

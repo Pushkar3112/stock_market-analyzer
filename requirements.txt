@@ -1,0 +1,48 @@
+# Core LangGraph & LangChain
+langgraph>=0.2.0
+langchain-core>=1.2.8
+langchain-groq>=1.1.0
+langchain-community>=0.3.0
+langsmith>=0.3.45
+
+# MCP Python SDK
+mcp>=1.0.0
+
+# NSE India Data
+nsepython>=2.3
+yfinance>=0.2.40
+jugaad-data>=0.28
+
+# Data & Indicators
+pandas>=2.0.0
+numpy>=1.24.0
+pandas-ta>=0.3.14b
+scipy>=1.10.0
+
+# WhatsApp Delivery
+twilio>=8.0.0
+
+# Database / Checkpointing
+psycopg2-binary>=2.9.0
+
+# Async & HTTP
+httpx>=0.24.0
+aiohttp>=3.9.0
+requests>=2.31.0
+
+# Visualization (backtesting charts)
+matplotlib>=3.7.0
+seaborn>=0.12.0
+
+# Configuration
+python-dotenv>=1.0.0
+pydantic>=2.0.0
+
+# Utilities
+python-dateutil>=2.8.0
+pytz>=2023.3
+tabulate>=0.9.0
+
+# Testing
+pytest>=7.4.0
+pytest-asyncio>=0.21.0
