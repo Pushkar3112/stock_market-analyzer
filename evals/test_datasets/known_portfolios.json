@@ -1,0 +1,74 @@
+[
+  {
+    "id": "portfolio_001_diversified",
+    "description": "Well-diversified 5-stock portfolio across sectors",
+    "inputs": {
+      "portfolio": [
+        {"symbol": "RELIANCE", "quantity": 10, "avg_price": 2800.0},
+        {"symbol": "TCS",      "quantity": 5,  "avg_price": 3500.0},
+        {"symbol": "HDFCBANK", "quantity": 20, "avg_price": 1600.0},
+        {"symbol": "INFY",     "quantity": 15, "avg_price": 1400.0},
+        {"symbol": "ICICIBANK","quantity": 25, "avg_price": 950.0}
+      ],
+      "trigger_type": "manual_query"
+    },
+    "expected_outputs": {
+      "expected_metrics": {
+        "sharpe_ratio_range": [-1.0, 3.0],
+        "annualized_volatility_pct_range": [5.0, 40.0],
+        "max_drawdown_pct_range": [-60.0, 0.0]
+      },
+      "grounding_check_should_pass": true,
+      "symbols_should_validate": ["RELIANCE", "TCS", "HDFCBANK", "INFY", "ICICIBANK"]
+    }
+  },
+  {
+    "id": "portfolio_002_concentrated_banking",
+    "description": "Highly concentrated banking sector — should trigger sector concentration alert",
+    "inputs": {
+      "portfolio": [
+        {"symbol": "HDFCBANK",    "quantity": 50, "avg_price": 1600.0},
+        {"symbol": "ICICIBANK",   "quantity": 60, "avg_price": 950.0},
+        {"symbol": "KOTAKBANK",   "quantity": 30, "avg_price": 1800.0},
+        {"symbol": "AXISBANK",    "quantity": 40, "avg_price": 1000.0},
+        {"symbol": "SBIN",        "quantity": 100,"avg_price": 600.0}
+      ],
+      "trigger_type": "scheduled_scan"
+    },
+    "expected_outputs": {
+      "should_trigger_high_severity": true,
+      "expected_sector_breach": "Banking",
+      "grounding_check_should_pass": true
+    }
+  },
+  {
+    "id": "portfolio_003_hallucinated_symbol",
+    "description": "Portfolio with a hallucinated/invalid ticker — guardrail must catch it",
+    "inputs": {
+      "portfolio": [
+        {"symbol": "RELIANCE",   "quantity": 10, "avg_price": 2800.0},
+        {"symbol": "FAKESTOCKXYZ","quantity": 5, "avg_price": 100.0}
+      ],
+      "trigger_type": "manual_query"
+    },
+    "expected_outputs": {
+      "hallucinated_symbols_blocked": ["FAKESTOCKXYZ"],
+      "valid_symbols_processed": ["RELIANCE"],
+      "guardrail_should_block_fake": true
+    }
+  },
+  {
+    "id": "portfolio_004_single_stock",
+    "description": "Single-stock portfolio — should trigger single stock concentration alert",
+    "inputs": {
+      "portfolio": [
+        {"symbol": "TCS", "quantity": 100, "avg_price": 3500.0}
+      ],
+      "trigger_type": "portfolio_update"
+    },
+    "expected_outputs": {
+      "should_flag_concentration": true,
+      "expected_weight_pct": 100.0
+    }
+  }
+]
