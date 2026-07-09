@@ -366,7 +366,7 @@ elif page == "🔍 Symbol Lookup":
     col1, col2 = st.columns([1, 2])
     with col1:
         symbol_input = st.text_input("Enter NSE Symbol", value="RELIANCE", placeholder="e.g. TCS, INFY").upper().strip()
-        validate_btn = st.button("Validate & Fetch", use_container_width=True)
+        validate_btn = st.button("Validate & Fetch", width='stretch')
 
     if validate_btn and symbol_input:
         with st.spinner(f"Validating {symbol_input}..."):
@@ -419,14 +419,14 @@ elif page == "🔍 Symbol Lookup":
                     ), row=1, col=1)
                     fig.add_trace(go.Bar(
                         x=df["Date"], y=df["Volume"],
-                        marker_color=["#00d46488" if c >= o else "#ff444488"
+                        marker_color=["rgba(0,212,100,0.5)" if c >= o else "rgba(255,68,68,0.5)"
                                       for c, o in zip(df["Close"], df["Open"])],
                         name="Volume"
                     ), row=2, col=1)
 
                     plotly_dark_layout(fig, f"{symbol_input} — 1 Year OHLCV", height=500)
                     fig.update_layout(xaxis_rangeslider_visible=False)
-                    st.plotly_chart(fig, use_container_width=True)
+                    st.plotly_chart(fig, width='stretch')
         else:
             st.error(f"❌ **{symbol_input}** is NOT a valid NSE symbol")
             st.info(f"Details: {validation['message']}")
@@ -443,7 +443,7 @@ elif page == "📊 Technical Analysis":
     col1, col2 = st.columns([1, 3])
     with col1:
         ta_symbol = st.text_input("Symbol", value="TCS").upper().strip()
-        run_ta = st.button("Compute Indicators", use_container_width=True)
+        run_ta = st.button("Compute Indicators", width='stretch')
 
     if run_ta and ta_symbol:
         # Validate first
@@ -499,16 +499,16 @@ elif page == "📊 Technical Analysis":
                         "axis": {"range": [0, 100], "tickcolor": "#c8d6e5"},
                         "bar": {"color": "#00d4ff"},
                         "steps": [
-                            {"range": [0, 30], "color": "#ff444433"},
-                            {"range": [30, 70], "color": "#1e3a5f33"},
-                            {"range": [70, 100], "color": "#ff444433"},
+                            {"range": [0, 30], "color": "rgba(255,68,68,0.2)"},
+                            {"range": [30, 70], "color": "rgba(30,58,95,0.2)"},
+                            {"range": [70, 100], "color": "rgba(255,68,68,0.2)"},
                         ],
                         "threshold": {"line": {"color": "#ffa500", "width": 3}, "value": rsi_val},
                     },
                     number={"font": {"color": "#e0e0e0"}}
                 ))
                 plotly_dark_layout(fig_rsi, height=280)
-                st.plotly_chart(fig_rsi, use_container_width=True)
+                st.plotly_chart(fig_rsi, width='stretch')
                 st.caption(ind.get("RSI", {}).get("interpretation", ""))
 
         with col_r:
@@ -521,7 +521,7 @@ elif page == "📊 Technical Analysis":
                 colors = ["#00d4ff", "#ff9500", "#00d464" if (macd_d.get("histogram", 0) or 0) > 0 else "#ff4444"]
                 fig_macd.add_trace(go.Bar(x=categories, y=vals, marker_color=colors))
                 plotly_dark_layout(fig_macd, "MACD Components", height=280)
-                st.plotly_chart(fig_macd, use_container_width=True)
+                st.plotly_chart(fig_macd, width='stretch')
 
         # Bollinger Bands chart
         st.subheader("📐 Bollinger Bands")
@@ -534,7 +534,7 @@ elif page == "📊 Technical Analysis":
             fig_bb = go.Figure()
             fig_bb.add_trace(go.Bar(x=labels, y=vals, marker_color=colors_bb, text=[f"₹{v:,.2f}" for v in vals], textposition="auto"))
             plotly_dark_layout(fig_bb, "Bollinger Bands — Current Snapshot", height=300)
-            st.plotly_chart(fig_bb, use_container_width=True)
+            st.plotly_chart(fig_bb, width='stretch')
 
             pb = bb.get("percent_b", 0.5)
             st.progress(min(max(pb, 0), 1), text=f"Percent B: {pb:.2%} — {bb.get('interpretation', '')}")
@@ -569,7 +569,7 @@ elif page == "💼 Portfolio Metrics":
     edited = st.data_editor(
         holdings_df,
         num_rows="dynamic",
-        use_container_width=True,
+        width='stretch',
         column_config={
             "symbol": st.column_config.TextColumn("Symbol", help="NSE symbol e.g. RELIANCE"),
             "quantity": st.column_config.NumberColumn("Quantity", min_value=1),
@@ -578,7 +578,7 @@ elif page == "💼 Portfolio Metrics":
         key="portfolio_editor",
     )
 
-    if st.button("Compute Portfolio Metrics", use_container_width=False):
+    if st.button("Compute Portfolio Metrics", width='content'):
         holdings = edited.to_dict("records")
         holdings = [h for h in holdings if h.get("symbol") and h.get("quantity") and h.get("avg_price")]
 
@@ -636,7 +636,7 @@ elif page == "💼 Portfolio Metrics":
                     textinfo="label+percent",
                 ))
                 plotly_dark_layout(fig_sector, "Sector Exposure", height=360)
-                st.plotly_chart(fig_sector, use_container_width=True)
+                st.plotly_chart(fig_sector, width='stretch')
 
         with col_r:
             # Holdings waterfall (P&L)
@@ -653,7 +653,7 @@ elif page == "💼 Portfolio Metrics":
                 ))
                 plotly_dark_layout(fig_pnl, "P&L per Holding (%)", height=360)
                 fig_pnl.add_hline(y=0, line_dash="dash", line_color="#7a8fa6")
-                st.plotly_chart(fig_pnl, use_container_width=True)
+                st.plotly_chart(fig_pnl, width='stretch')
 
         # Holdings table
         st.subheader("📋 Holdings Detail")
@@ -665,7 +665,7 @@ elif page == "💼 Portfolio Metrics":
             df_display["pnl_pct"] = df_display["pnl_pct"].apply(lambda x: f"{x:+.2f}%")
             df_display["current_value"] = df_display["current_value"].apply(lambda x: f"₹{x:,.0f}")
             df_display["pnl"] = df_display["pnl"].apply(lambda x: f"₹{x:+,.0f}")
-            st.dataframe(df_display, use_container_width=True)
+            st.dataframe(df_display, width='stretch')
 
         with st.expander("🔬 Raw tool output (for grounding verification)"):
             st.json(result)
@@ -690,7 +690,7 @@ elif page == "🔎 Factor Screening":
         top_n = st.slider("Top N Candidates", 3, 20, 10)
     with col3:
         st.markdown("<br>", unsafe_allow_html=True)
-        run_screen = st.button("Run Factor Screen", use_container_width=True)
+        run_screen = st.button("Run Factor Screen", width='stretch')
 
     if run_screen:
         if not factors:
@@ -729,7 +729,7 @@ elif page == "🔎 Factor Screening":
         ))
         plotly_dark_layout(fig_scores, "Factor Screen — Composite Scores (higher = stronger)", height=max(350, len(candidates) * 35))
         fig_scores.update_layout(yaxis={"autorange": "reversed"})
-        st.plotly_chart(fig_scores, use_container_width=True)
+        st.plotly_chart(fig_scores, width='stretch')
 
         # Candidate cards
         st.subheader("📋 Top Candidates — Detailed Breakdown")
@@ -789,10 +789,10 @@ elif page == "🤖 Full Agent Run":
         ]
 
     agent_df = pd.DataFrame(st.session_state.agent_holdings)
-    agent_edited = st.data_editor(agent_df, num_rows="dynamic", use_container_width=True, key="agent_editor")
+    agent_edited = st.data_editor(agent_df, num_rows="dynamic", width='stretch', key="agent_editor")
 
     trigger_type = st.selectbox("Trigger Type", ["manual_query", "scheduled_scan", "portfolio_update"])
-    run_agent = st.button("🚀 Run Full Agent Pipeline", use_container_width=False)
+    run_agent = st.button("🚀 Run Full Agent Pipeline", width='content')
 
     if run_agent:
         holdings = agent_edited.dropna().to_dict("records")
@@ -811,12 +811,34 @@ elif page == "🤖 Full Agent Run":
             st.write("📝 Generating report with grounding verification...")
 
             try:
-                from agent.graph import run_portfolio_analysis
-                result = run_async(run_portfolio_analysis(
-                    portfolio=holdings,
-                    trigger_type=trigger_type,
-                    thread_id=f"ui_{int(time.time())}",
-                ))
+                # Run agent as subprocess to avoid relative-import collision with Streamlit
+                import subprocess, json as _json, sys as _sys
+                agent_script = """
+import sys, asyncio, json
+sys.path.insert(0, r'{cwd}')
+from agent.graph import run_portfolio_analysis
+result = asyncio.run(run_portfolio_analysis(
+    portfolio={portfolio},
+    trigger_type='{trigger}',
+    thread_id='{tid}',
+))
+# Only serialize safe fields
+safe = {{k: v for k, v in result.items() if k != 'tool_call_registry'}}
+print(json.dumps(safe, default=str))
+""".format(
+                        cwd=os.path.dirname(os.path.abspath(__file__)).replace('\\', '/'),
+                        portfolio=json.dumps(holdings),
+                        trigger=trigger_type,
+                        tid=f"ui_{int(time.time())}",
+                    )
+                proc = subprocess.run(
+                    [_sys.executable, "-c", agent_script],
+                    capture_output=True, text=True, timeout=300,
+                    cwd=os.path.dirname(os.path.abspath(__file__)),
+                )
+                if proc.returncode != 0:
+                    raise RuntimeError(proc.stderr[-2000:] if proc.stderr else "Agent process failed")
+                result = json.loads(proc.stdout.strip().split("\n")[-1])
                 status.update(label="✅ Agent pipeline complete!", state="complete")
             except Exception as e:
                 status.update(label=f"❌ Error: {e}", state="error")
@@ -893,7 +915,7 @@ elif page == "📉 Backtesting":
         with col3:
             rebal_months = st.selectbox("Rebalance Every", [1, 3, 6], index=1, format_func=lambda x: f"{x} months")
 
-        run_bt = st.button("Run Factor Backtest", use_container_width=False)
+        run_bt = st.button("Run Factor Backtest", width='content')
 
         if run_bt:
             with st.spinner("Running backtest (fetching 2 years of data, may take ~60s)..."):
@@ -937,7 +959,7 @@ elif page == "📉 Backtesting":
             chart_path = bt_result.get("chart_path")
             if chart_path and os.path.exists(chart_path):
                 st.subheader("📈 Cumulative Returns Chart")
-                st.image(chart_path, use_container_width=True)
+                st.image(chart_path, width='stretch')
 
             # Comparison bar chart
             fig_compare = go.Figure()
@@ -958,7 +980,7 @@ elif page == "📉 Backtesting":
             fig_compare.add_trace(go.Bar(name="Nifty 50", x=categories, y=bench_vals, marker_color="#ff9500"))
             plotly_dark_layout(fig_compare, "Strategy vs Nifty 50 — Key Metrics", height=380)
             fig_compare.update_layout(barmode="group")
-            st.plotly_chart(fig_compare, use_container_width=True)
+            st.plotly_chart(fig_compare, width='stretch')
 
     with tab2:
         st.subheader("Alert Rule Hit-Rate Backtest")
@@ -971,7 +993,7 @@ elif page == "📉 Backtesting":
             hold_days = st.slider("Hold Days", 1, 30, 5)
         with col4:
             st.markdown("<br>", unsafe_allow_html=True)
-            run_alert_bt = st.button("Run Hit-Rate Backtest", use_container_width=True)
+            run_alert_bt = st.button("Run Hit-Rate Backtest", width='stretch')
 
         if run_alert_bt:
             rule = {"type": rule_type, "hold_days": hold_days}
@@ -1014,10 +1036,10 @@ elif page == "📉 Backtesting":
                     ))
                     plotly_dark_layout(fig_trades, f"{bt_symbol} — Trade Returns ({rule_type})", height=380)
                     fig_trades.add_hline(y=0, line_dash="dash", line_color="#7a8fa6")
-                    st.plotly_chart(fig_trades, use_container_width=True)
+                    st.plotly_chart(fig_trades, width='stretch')
 
                     st.subheader("📋 Trade Log")
-                    st.dataframe(pd.DataFrame(trades), use_container_width=True)
+                    st.dataframe(pd.DataFrame(trades), width='stretch')
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -1047,7 +1069,7 @@ elif page == "🛡️ Guardrails Demo":
             )
         with col2:
             st.markdown("<br>", unsafe_allow_html=True)
-            run_validation = st.button("Run Validation on All", use_container_width=True)
+            run_validation = st.button("Run Validation on All", width='stretch')
 
         if run_validation:
             symbols = [s.strip().upper() for s in test_symbols.split("\n") if s.strip()]
@@ -1136,7 +1158,7 @@ elif page == "🛡️ Guardrails Demo":
         df_cd["Hours Since"] = [(datetime.now() - datetime.strptime(t, "%Y-%m-%d %H:%M")).total_seconds() / 3600 for t in df_cd["Last Sent"]]
         df_cd["Status"] = df_cd["Hours Since"].apply(lambda h: "🔒 BLOCKED" if h < 6 else "✅ ALLOWED")
 
-        st.dataframe(df_cd[["Symbol", "Alert Type", "Last Sent", "Hours Since", "Status"]].round(1), use_container_width=True)
+        st.dataframe(df_cd[["Symbol", "Alert Type", "Last Sent", "Hours Since", "Status"]].round(1), width='stretch')
 
         blocked_count = (df_cd["Hours Since"] < 6).sum()
         st.metric("Would-be alerts blocked by rate limit", f"{blocked_count}/{len(df_cd)}")
@@ -1169,7 +1191,7 @@ elif page == "⚙️ System Check":
     st.title("⚙️ System Check & Installation Verification")
     st.caption("Verifies all dependencies, API keys, and MCP tools are working correctly.")
 
-    if st.button("Run Full System Check", use_container_width=False):
+    if st.button("Run Full System Check", width='content'):
         checks = []
 
         # Package checks
