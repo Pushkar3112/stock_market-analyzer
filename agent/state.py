@@ -2,8 +2,18 @@
 PortfolioState — the single source of truth for all agent nodes.
 Every number that flows through the graph must be traceable to a tool_call_id.
 """
-from typing import TypedDict, Literal, Optional, Annotated
+from typing import TypedDict, Literal, Optional, Annotated, Any
 import operator
+
+
+def _merge_dicts(a: dict, b: dict) -> dict:
+    """Reducer for dict keys written by concurrent nodes — merges without losing entries."""
+    return {**a, **b}
+
+
+def _concat_lists(a: list, b: list) -> list:
+    """Reducer for list keys written by concurrent nodes — concatenates."""
+    return a + b
 
 
 class Holding(TypedDict):
@@ -31,11 +41,11 @@ class PortfolioState(TypedDict):
     technical_indicators: dict     # symbol -> {rsi, macd, sma_50, sma_200, ...}
     portfolio_metrics: dict        # sharpe, volatility, max_drawdown, var_95, sector_exposure
 
-    # Screening
-    screened_opportunities: list[dict]   # factor-screened candidates, not LLM opinion
+    # Screening — written by factor_screen_opportunities (concurrent with generate_candidate_alerts)
+    screened_opportunities: Annotated[list[dict], _concat_lists]
 
-    # Alert pipeline
-    candidate_alerts: list[Alert]
+    # Alert pipeline — candidate_alerts written by generate_candidate_alerts (fan-in node)
+    candidate_alerts: Annotated[list[Alert], _concat_lists]
     validated_alerts: list[Alert]
     blocked_alerts: list[dict]          # alert + reason for guardrail rejection
 
@@ -52,5 +62,6 @@ class PortfolioState(TypedDict):
     delivery_status: dict               # {sent: int, failed: int, retried: int, messages: list}
 
     # Observability
-    tool_call_registry: dict            # tool_call_id -> {tool, args, output, timestamp}
+    # tool_call_registry is written by EVERY node — needs dict-merge reducer for concurrent steps
+    tool_call_registry: Annotated[dict[str, Any], _merge_dicts]
     errors: Annotated[list[str], operator.add]   # accumulated error log

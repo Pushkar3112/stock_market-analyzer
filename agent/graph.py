@@ -115,14 +115,18 @@ def build_graph(use_memory_saver: bool = True) -> StateGraph:
     # Entry point
     builder.set_entry_point("fetch_market_data")
 
-    # Linear edges (first phase)
+    # fetch → compute indicators (sequential first — portfolio metrics needs clean state too)
     builder.add_edge("fetch_market_data", "compute_technical_indicators")
-    builder.add_edge("fetch_market_data", "compute_portfolio_metrics")
-    builder.add_edge("compute_technical_indicators", "factor_screen_opportunities")
-    builder.add_edge("compute_technical_indicators", "generate_candidate_alerts")
+    builder.add_edge("compute_technical_indicators", "compute_portfolio_metrics")
+
+    # After both compute nodes done → fan-out to screen + alerts (concurrent, reducers handle it)
+    builder.add_edge("compute_portfolio_metrics", "factor_screen_opportunities")
     builder.add_edge("compute_portfolio_metrics", "generate_candidate_alerts")
+
+    # Fan-in to guardrail (both must complete before guardrail runs)
     builder.add_edge("factor_screen_opportunities", "guardrail_validate")
     builder.add_edge("generate_candidate_alerts", "guardrail_validate")
+
 
     # Conditional edge: severity routing
     builder.add_conditional_edges(
