@@ -12,7 +12,7 @@ from langchain_core.messages import SystemMessage, HumanMessage
 from ..state import PortfolioState
 from ..config import config
 from ..prompts import FACTOR_SCREENING_PROMPT
-from ...mcp_server.tools.factor_screen import factor_screen as _factor_screen
+from mcp_server.tools.factor_screen import factor_screen as _factor_screen
 
 logger = logging.getLogger(__name__)
 

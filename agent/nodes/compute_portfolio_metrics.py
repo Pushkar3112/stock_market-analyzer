@@ -7,7 +7,7 @@ import logging
 from datetime import datetime
 
 from ..state import PortfolioState
-from ...mcp_server.tools.portfolio_metrics import compute_portfolio_metrics as _compute_metrics
+from mcp_server.tools.portfolio_metrics import compute_portfolio_metrics as _compute_metrics
 
 logger = logging.getLogger(__name__)
 

@@ -7,7 +7,7 @@ import logging
 from datetime import datetime
 
 from ..state import PortfolioState
-from ...mcp_server.tools.technical_indicators import compute_technical_indicators as _compute
+from mcp_server.tools.technical_indicators import compute_technical_indicators as _compute
 
 logger = logging.getLogger(__name__)
 

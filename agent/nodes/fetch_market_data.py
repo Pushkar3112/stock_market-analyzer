@@ -7,8 +7,8 @@ import logging
 from datetime import datetime
 
 from ..state import PortfolioState
-from ...mcp_server.tools.validate_symbol import validate_symbol
-from ...mcp_server.tools.market_data import get_equity_details
+from mcp_server.tools.validate_symbol import validate_symbol
+from mcp_server.tools.market_data import get_equity_details
 
 logger = logging.getLogger(__name__)
 
